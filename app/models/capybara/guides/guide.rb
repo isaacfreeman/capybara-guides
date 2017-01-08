@@ -14,6 +14,8 @@ module Capybara
         @steps = []
       end
 
+      # TODO: Use title instead of "guide.html"
+      # TODO: Config for destination path
       def write_to_html
         rendered_string = GuidesController.render(
           layout: 'capybara/guides/guides',

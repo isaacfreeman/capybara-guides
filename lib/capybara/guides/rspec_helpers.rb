@@ -8,6 +8,8 @@ module Capybara
       current_step.save_guide_screenshot
       @guide.steps << current_step
     end
+
+    # TODO: Represent user actions like button clicks
   end
 end
 
