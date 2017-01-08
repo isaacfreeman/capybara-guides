@@ -1,5 +1,7 @@
 module Capybara
   module Guides
+    module_function
+
     # Returns the version of the currently loaded SolidusReservedStock as a
     # <tt>Gem::Version</tt>.
     def version

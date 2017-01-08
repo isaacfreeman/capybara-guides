@@ -1,0 +1,10 @@
+<ol>
+  <h1><%= @guide.title %></h1>
+  <p><%= @guide.intro %></p>
+  <% @guide.steps.each do |step| %>
+    <li>
+      <h3><%= step.title %></h3>
+      <img src="<%= step.screenshot_name %>" >
+    </li>
+  <% end %>
+</ol>
