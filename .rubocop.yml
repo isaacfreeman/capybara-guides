@@ -1,0 +1,27 @@
+# This is the configuration used to check the rubocop source code.
+# See https://github.com/bbatsov/rubocop/blob/master/config/default.yml for info
+
+AllCops:
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+  Rails:
+    Enabled: true
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+  SupportedStyles:
+    - single_quotes
+    - double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: single_quotes
+  SupportedStyles:
+    - single_quotes
+    - double_quotes
+
+Style/DotPosition:
+  EnforcedStyle: trailing
+  SupportedStyles:
+    - leading
+    - trailing
