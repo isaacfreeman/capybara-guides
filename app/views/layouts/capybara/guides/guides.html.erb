@@ -5,6 +5,21 @@
     <%= stylesheet_link_tag    "capybara/guides/application", media: "all" %>
     <%= javascript_include_tag "capybara/guides/application" %>
     <%= csrf_meta_tags %>
+
+    <style>
+      .screenshot {
+        border: solid 1px black;
+        padding: 0.5em;
+        float: left;
+        margin: 0 2em 2em 0;
+        width: 50%;
+      }
+
+      ol.steps>li {
+        clear: both;
+        margin-bottom: 2em;
+      }
+    </style>
   </head>
   <body>
     <%= yield %>

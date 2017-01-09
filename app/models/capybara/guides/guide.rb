@@ -16,6 +16,7 @@ module Capybara
 
       # TODO: Use title instead of "guide.html"
       # TODO: Config for destination path
+      # TODO: Write CSS file into directory
       def write_to_html
         rendered_string = GuidesController.render(
           layout: 'capybara/guides/guides',

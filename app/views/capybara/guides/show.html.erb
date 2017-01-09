@@ -1,10 +1,19 @@
-<ol>
-  <h1><%= @guide.title %></h1>
-  <p><%= @guide.intro %></p>
+<h1><%= @guide.title %></h1>
+<p><%= @guide.intro %></p>
+<ol class="steps">
   <% @guide.steps.each do |step| %>
     <li>
-      <h3><%= step.title %></h3>
-      <img src="<%= step.screenshot_name %>" >
+      <h2><%= step.title %></h2>
+      <img src="<%= step.screenshot_name %>" class="screenshot">
+      <% if step.actions.any? %>
+        <ol class="actions">
+          <% step.actions.each do |action| %>
+            <li>
+              <%= action %>
+            </li>
+          <% end %>
+        </ol>
+      <% end %>
     </li>
   <% end %>
 </ol>

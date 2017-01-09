@@ -3,10 +3,14 @@ module Capybara
   module Guides
     # TODO: Assume :guide tag if spec is in spec/guides
     def step(title = nil)
-      current_step = Step.new(self, @guide.steps.size + 1, title)
+      @current_step = Step.new(self, @guide.steps.size + 1, title)
+      @current_step.save_guide_screenshot
       yield
-      current_step.save_guide_screenshot
-      @guide.steps << current_step
+      @guide.steps << @current_step
+    end
+
+    def user_action(text)
+      @current_step.actions << text
     end
 
     # TODO: Represent user actions like button clicks
@@ -15,10 +19,12 @@ end
 
 RSpec.configure do |config|
   config.include Capybara::Guides
+
   # set :guide automatically for guides directory
   config.define_derived_metadata(file_path: /spec[\\\/]guides[\\\/]/) do |metadata|
     metadata[:guide] = true
   end
+
   config.around(:each, :guide) do |example|
     @guide = Capybara::Guides::Guide.new(example.metadata[:description])
     example.run

@@ -4,11 +4,13 @@ module Capybara
     # Represents a single step within a guide
     class Step
       attr_reader :title
+      attr_accessor :actions
 
       def initialize(capybara_example_group, index, title = nil)
         @title = title
         @index = index
         @capybara_example_group = capybara_example_group
+        @actions = []
       end
 
       def save_guide_screenshot
