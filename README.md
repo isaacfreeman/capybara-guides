@@ -6,6 +6,7 @@ This gem automates the production of simple guides from Capybara feature specs, 
 
 This is currently a proof-of-concept, and hasn't been tested in practice yet.
 
+## Example output
 ![Example Image](https://raw.githubusercontent.com/isaacfreeman/capybara-guides/master/doc/example.png)
 
 ## Installation
