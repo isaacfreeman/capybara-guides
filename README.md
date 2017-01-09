@@ -23,8 +23,9 @@ Or install it yourself as:
     $ gem install capybara-guides
 
 ## Usage
-Add the `:guide` tag to the scenario you want to generate a guide from.
-Optionally, you can add an intro.
+Add the `:guide` tag to the scenario you want to generate a guide from. If you have `infer_spec_type_from_file_location!` active, you can also put your guide specs directly into `/spec/guides`.
+
+Add an optional intro.
 ```
 scenario "How to purchase a product", js: true, guide: true do
   @guide.intro = "An example guide showing how to get through checkout"
