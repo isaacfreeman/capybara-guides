@@ -14,7 +14,6 @@ module Capybara
         @steps = []
       end
 
-      # TODO: Use title instead of "guide.html"
       # TODO: Config for destination path
       # TODO: Write CSS file into directory
       def write_to_html
@@ -24,11 +23,19 @@ module Capybara
           assigns: { guide: self }
         )
         directory_name = Rails.root.join('doc/guides')
-        path = directory_name.join('guide.html')
+        path = directory_name.join(html_filename(title))
         puts "Writing guide to #{path}"
         file_html = File.new(path, 'w+')
         file_html.puts rendered_string
         file_html.close
+      end
+
+      private
+
+      def html_filename(title)
+        ActiveSupport::Inflector.transliterate(
+          title.downcase.gsub(/\s/,"_")
+        ) + '.html'
       end
     end
   end

@@ -2,7 +2,7 @@
 
 Manually producing screenshots for user guides is time-consuming.
 
-This gem automates the production of simple guides from Capybara feature specs, so that simple guides can be generated automatically every time the spec is run.
+This gem automates the production of simple guides from Capybara feature specs, so that simple guides can be updated every time the spec is run.
 
 This is currently a proof-of-concept, and hasn't been tested in practice yet.
 
