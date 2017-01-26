@@ -3,9 +3,12 @@ module Capybara
   module Guides
     def step(title = nil)
       @current_step = Step.new(self, @guide.steps.size + 1, title)
+      RSpec.current_example.metadata[:current_step] = @current_step
       @current_step.save_guide_screenshot
       @guide.steps << @current_step
       yield
+      @current_step = nil
+      RSpec.current_example.metadata[:current_step] = nil
     end
 
     def user_action(text)
@@ -42,6 +45,7 @@ module RecordGuideActionForCapybaraActions
     record_action "Click on \"#{locator}\""
     super
   end
+  alias_method :click_on, :click_link_or_button
 
   def fill_in(locator, options = {})
     record_action "Fill in #{locator} with \"#{options[:with]}\""
@@ -68,7 +72,7 @@ module RecordGuideActionForCapybaraActions
   # TODO: Merge with user_action
   def record_action(action)
     if RSpec.current_example.metadata[:current_guide].present?
-      current_step = RSpec.current_example.metadata[:current_guide].steps.last
+      current_step = RSpec.current_example.metadata[:current_step]
       current_step.actions << action if current_step.present?
     end
   end
@@ -79,7 +83,7 @@ Capybara::Node::Base.prepend RecordGuideActionForCapybaraActions
 module RecordGuideActionForVisit
   def visit(visit_uri)
     if RSpec.current_example.metadata[:current_guide].present?
-      current_step = RSpec.current_example.metadata[:current_guide].steps.last
+      current_step = RSpec.current_example.metadata[:current_step]
       current_step.actions << "Visit #{visit_uri}" if current_step.present?
     end
     super
