@@ -32,6 +32,10 @@ module Capybara
         Rails.root.join('doc', 'guides', group_dir, guide_dir)
       end
 
+      def browser_title
+        "#{@group_title} | #{title}"
+      end
+
       private
 
       def rendered_string
