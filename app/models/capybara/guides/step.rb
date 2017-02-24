@@ -6,22 +6,22 @@ module Capybara
       attr_reader :title
       attr_accessor :actions
 
-      def initialize(capybara_example_group, index, title = nil)
+      def initialize(directory_name, capybara_example_group, index, title = nil)
         @title = title
         @index = index
         @capybara_example_group = capybara_example_group
         @actions = []
+        @directory_name = directory_name
       end
 
       def save_guide_screenshot
-        directory_name = Rails.root.join('doc/guides')
-        FileUtils.mkdir_p(directory_name)
-        path = directory_name.join(screenshot_name)
+        FileUtils.mkdir_p(@directory_name)
+        path = @directory_name.join('images', screenshot_filename)
         @capybara_example_group.save_screenshot(path, full: true)
       end
 
-      def screenshot_name
-        "screenshot_#{@index}.png"
+      def screenshot_filename
+        "#{@index}-#{@title.parameterize(separator: '_')}.png"
       end
     end
   end

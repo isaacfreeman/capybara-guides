@@ -4,7 +4,7 @@
   <% @guide.steps.each do |step| %>
     <li>
       <h2><%= step.title %></h2>
-      <img src="<%= step.screenshot_name %>" class="screenshot">
+      <img src="images/<%= step.screenshot_filename %>" class="screenshot">
       <% if step.actions.any? %>
         <ol class="actions">
           <% step.actions.each do |action| %>

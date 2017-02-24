@@ -2,7 +2,7 @@ module Capybara
   # Classes to support generating guides in Capybara feature specs
   module Guides
     def step(title = nil)
-      @current_step = Step.new(self, @guide.steps.size + 1, title)
+      @current_step = Step.new(@guide.directory_name, self, @guide.steps.size + 1, title)
       RSpec.current_example.metadata[:current_step] = @current_step
       @current_step.save_guide_screenshot
       @guide.steps << @current_step
@@ -100,7 +100,7 @@ RSpec.configure do |config|
   end
 
   config.around(:each, :guide) do |example|
-    @guide = Capybara::Guides::Guide.new(example.metadata[:description])
+    @guide = Capybara::Guides::Guide.new(example)
     RSpec.current_example.metadata[:current_guide] = @guide
     example.run
     @guide.write_to_html
