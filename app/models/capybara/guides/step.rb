@@ -12,6 +12,11 @@ module Capybara
         @capybara_example_group = capybara_example_group
         @actions = []
         @directory_name = directory_name
+        @has_screenshot = capybara_example_group.page.current_path.present?
+      end
+
+      def has_screenshot?
+        @has_screenshot
       end
 
       def save_guide_screenshot

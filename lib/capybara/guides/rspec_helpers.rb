@@ -4,7 +4,7 @@ module Capybara
     def step(title = nil)
       @current_step = Step.new(@guide.directory_name, self, @guide.steps.size + 1, title)
       RSpec.current_example.metadata[:current_step] = @current_step
-      @current_step.save_guide_screenshot
+      @current_step.save_guide_screenshot if page.current_path.present?
       @guide.steps << @current_step
       yield
       @current_step = nil
