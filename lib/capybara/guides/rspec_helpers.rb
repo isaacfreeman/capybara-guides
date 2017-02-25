@@ -42,7 +42,8 @@ module RecordGuideActionForCapybaraActions
   end
 
   def click_link_or_button(locator = nil, options = {})
-    record_action "Click on \"#{locator}\""
+    link_or_button = find(:link_or_button, locator, options)
+    record_action "Click on \"#{locator}\"#{at_position(link_or_button)}"
     super
   end
   alias_method :click_on, :click_link_or_button
@@ -75,6 +76,29 @@ module RecordGuideActionForCapybaraActions
       current_step = RSpec.current_example.metadata[:current_step]
       current_step.actions << action if current_step.present?
     end
+  end
+
+  def at_position(element)
+    xpath = element.path
+    element_data = @session.evaluate_script("document.evaluate('#{xpath}', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getBoundingClientRect()")
+    body_data = @session.evaluate_script("document.body.getBoundingClientRect()")
+    top_limit = body_data['height']/3
+    bottom_limit = body_data['height']*2/3
+    vertical_position = case element_data['top']
+                        when 0..top_limit then 'top'
+                        when top_limit..bottom_limit then 'center'
+                        else 'bottom'
+                        end
+    left_limit = body_data['width']/3
+    right_limit = body_data['width']*2/3
+    horizontal_position = case element_data['left']
+                          when 0..left_limit then 'left'
+                          when left_limit..right_limit then 'middle'
+                          else 'right'
+                          end
+    position = [vertical_position, horizontal_position].join(' ')
+    return " in the middle" if position == 'middle center'
+    " at the #{position}"
   end
 end
 Capybara::Node::Base.prepend RecordGuideActionForCapybaraActions
