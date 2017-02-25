@@ -1,18 +1,18 @@
+# TODO: Split this file up
 module Capybara
   # Classes to support generating guides in Capybara feature specs
   module Guides
-    def step(title = nil)
-      @current_step = Step.new(@guide.directory_name, self, @guide.steps.size + 1, title)
-      RSpec.current_example.metadata[:current_step] = @current_step
-      @current_step.save_guide_screenshot if page.current_path.present?
-      @guide.steps << @current_step
-      yield
-      @current_step = nil
-      RSpec.current_example.metadata[:current_step] = nil
+    def text_block(text)
+      @guide.new_steps << TextBlock.new(text)
     end
 
-    def user_action(text)
-      @current_step.actions << text
+    def heading(text)
+      @guide.new_steps << Heading.new(text)
+    end
+
+    def screenshot
+      return unless page.current_path.present?
+      @guide.new_steps << Capybara::Guides::Screenshot.new(@guide.directory_name, self)
     end
   end
 end
@@ -71,11 +71,9 @@ module RecordGuideActionForCapybaraActions
   private
 
   # TODO: Merge with user_action
-  def record_action(action)
-    if RSpec.current_example.metadata[:current_guide].present?
-      current_step = RSpec.current_example.metadata[:current_step]
-      current_step.actions << action if current_step.present?
-    end
+  def record_action(text)
+    guide = RSpec.current_example.metadata[:current_guide]
+    guide.new_steps << Capybara::Guides::Action.new(text) if guide.present?
   end
 
   def at_position(element)
@@ -106,9 +104,10 @@ Capybara::Node::Base.prepend RecordGuideActionForCapybaraActions
 # Override Capybara visit action to record the action
 module RecordGuideActionForVisit
   def visit(visit_uri)
-    if RSpec.current_example.metadata[:current_guide].present?
-      current_step = RSpec.current_example.metadata[:current_step]
-      current_step.actions << "Visit #{visit_uri}" if current_step.present?
+    guide = RSpec.current_example.metadata[:current_guide]
+    if guide.present?
+      text = "Visit #{visit_uri}"
+      guide.new_steps << Capybara::Guides::Action.new(text) if guide.present?
     end
     super
   end
@@ -124,9 +123,20 @@ RSpec.configure do |config|
   end
 
   config.around(:each, :guide) do |example|
+
     @guide = Capybara::Guides::Guide.new(example)
     RSpec.current_example.metadata[:current_guide] = @guide
     example.run
     @guide.write_to_html
   end
 end
+
+# TODO: Screenshots for other RSpec matchers
+module RecordScreenshotForHaveTextMatch
+  def matches?(actual)
+    guide = RSpec.current_example.metadata[:current_guide]
+    guide.new_steps << Capybara::Guides::Expected.new(guide.directory_name, content, actual) if guide.present?
+    super
+  end
+end
+Capybara::RSpecMatchers::HaveText.prepend RecordScreenshotForHaveTextMatch
