@@ -3,16 +3,15 @@ module Capybara
   # Classes to support generating guides in Capybara feature specs
   module Guides
     def text_block(text)
-      @guide.new_steps << TextBlock.new(text)
+      @guide.steps << TextBlock.new(text)
     end
 
     def heading(text)
-      @guide.new_steps << Heading.new(text)
+      @guide.steps << Heading.new(text)
     end
 
-    def screenshot
-      return unless page.current_path.present?
-      @guide.new_steps << Capybara::Guides::Screenshot.new(@guide.directory_name, self)
+    def sidebar(text)
+      @guide.steps << Sidebar.new(text)
     end
   end
 end
@@ -73,7 +72,7 @@ module RecordGuideActionForCapybaraActions
   # TODO: Merge with user_action
   def record_action(text)
     guide = RSpec.current_example.metadata[:current_guide]
-    guide.new_steps << Capybara::Guides::Action.new(text) if guide.present?
+    guide.steps << Capybara::Guides::Action.new(text) if guide.present?
   end
 
   def at_position(element)
@@ -107,7 +106,7 @@ module RecordGuideActionForVisit
     guide = RSpec.current_example.metadata[:current_guide]
     if guide.present?
       text = "Visit #{visit_uri}"
-      guide.new_steps << Capybara::Guides::Action.new(text) if guide.present?
+      guide.steps << Capybara::Guides::Action.new(text) if guide.present?
     end
     super
   end
@@ -135,7 +134,7 @@ end
 module RecordScreenshotForHaveTextMatch
   def matches?(actual)
     guide = RSpec.current_example.metadata[:current_guide]
-    guide.new_steps << Capybara::Guides::Expected.new(guide.directory_name, content, actual) if guide.present?
+    guide.steps << Capybara::Guides::Expected.new(guide.directory_name, content, actual) if guide.present?
     super
   end
 end

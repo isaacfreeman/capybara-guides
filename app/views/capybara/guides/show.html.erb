@@ -3,9 +3,9 @@
 <% end %>
 <h1><%= @guide.title %></h1>
 <ol class="steps">
-  <% @guide.new_steps.each do |new_step| %>
+  <% @guide.steps.each do |step| %>
     <li>
-      <%= render partial: new_step.partial, locals: { step: new_step } %>
+      <%= render partial: step.partial, locals: { step: step } %>
     </li>
   <% end %>
 </ol>

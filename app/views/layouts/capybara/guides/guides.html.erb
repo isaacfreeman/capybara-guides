@@ -7,11 +7,15 @@
     <%= csrf_meta_tags %>
 
     <style>
+      h2 {
+        clear: left;
+      }
       .screenshot {
         border: solid 1px black;
         padding: 0.5em;
         float: left;
-        margin-bottom: 2em;
+        clear: left;
+        margin: 0 2em 2em 0;
         width: 40%;
       }
 
@@ -19,23 +23,19 @@
         border: solid 1px black;
         padding: 0.5em;
         margin: 0 2em 2em 0;
-        max-width: 100%;
+        max-width: 40%;
         display: block;
       }
-      ol.steps>li {
-        clear: left;
-        float: left;
-        margin-bottom: 2em;
-        width: 100%;
-      }
-      ol.actions {
-        float: left;
+
+      aside {
+        border-top: solid 2px #cccccc;
+        border-bottom: solid 2px #cccccc;
+        padding: 1em 0;
         width: 40%;
+        display: inline-block
       }
-      ol.actions>li {
-        clear: left;
-        float: left;
-        margin-bottom: 1em;
+      ol.steps>li {
+        list-style: none;
       }
     </style>
   </head>

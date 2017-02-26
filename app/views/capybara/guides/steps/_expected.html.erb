@@ -1,4 +1,8 @@
-<p>You should see <%= step.text %></p>
-<% if step.image_filename.present? %>
-  <img src="<%= step.image_filename %>" class="element_screenshot">
+<% if step.full_screenshot? %>
+  <img src="<%= step.image_filename %>" class="screenshot">
+<% else %>
+  <p>You should see "<%= step.text %>"</p>
+  <% if step.image_filename.present? %>
+    <img src="<%= step.image_filename %>" class="element_screenshot">
+  <% end %>
 <% end %>

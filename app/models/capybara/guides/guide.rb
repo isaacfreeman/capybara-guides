@@ -1,17 +1,16 @@
 require 'fileutils'
 
 module Capybara
-  # Classes to support generating guides in Capybara feature specs
   module Guides
     # Represents a user guide
     class Guide
-      attr_accessor :new_steps
+      attr_accessor :steps
       attr_accessor :title
 
       def initialize(example)
         @group_title = example.metadata[:example_group][:description]
         @title = example.metadata[:description]
-        @new_steps = []
+        @steps = []
       end
 
       # TODO: Config for destination path

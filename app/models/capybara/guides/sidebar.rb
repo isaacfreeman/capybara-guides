@@ -1,6 +1,6 @@
 module Capybara
   module Guides
-    class TextBlock
+    class Sidebar
       attr_reader :text
 
       def initialize(text)
@@ -8,7 +8,7 @@ module Capybara
       end
 
       def partial
-        'capybara/guides/steps/text_block'
+        'capybara/guides/steps/sidebar'
       end
     end
   end
