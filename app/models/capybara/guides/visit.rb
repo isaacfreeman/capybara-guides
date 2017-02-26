@@ -2,33 +2,36 @@ require 'mini_magick'
 
 module Capybara
   module Guides
-    class Expected
+    class Visit
       attr_reader :text
       attr_reader :image_filename
 
-      def initialize(directory_name, text, element)
+      def initialize(text, element = nil, directory_name = nil)
         @text = text
+        return unless element && directory_name
         @element = element
         @directory_name = directory_name
         @image_filename = directory_name.join('images', screenshot_filename + '.png')
         save_screenshot(image_filename)
       end
 
+      # TODO: Extract screenshot code to a module
+      # TODO: Some elements are outside the screenshot area
       def save_screenshot(image_filename)
         session.driver.save_screenshot(image_filename, full: true)
         crop(image_filename) unless full_screenshot?
       end
 
       def screenshot_filename
-        @filename ||= "#{index}-expected-#{@text.parameterize(separator: '_')}".first(32)
+        @filename ||= "#{index}-visit-#{@text.parameterize(separator: '_')}"
       end
 
       def full_screenshot?
-        @element.is_a? Capybara::Session
+        true
       end
 
       def partial
-        'capybara/guides/steps/expected'
+        'capybara/guides/steps/visit'
       end
 
       private

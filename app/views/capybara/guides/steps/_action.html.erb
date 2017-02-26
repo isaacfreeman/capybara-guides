@@ -1,1 +1,10 @@
-<p><%= step.text %></p>
+<% if step.full_screenshot? %>
+  <h2></h2>
+  <p><%= step.text %></p>
+  <img src="<%= step.image_filename %>" class="screenshot">
+<% else %>
+  <p><%= step.text %></p>
+  <% if step.image_filename.present? %>
+    <img src="<%= step.image_filename %>" class="element_screenshot">
+  <% end %>
+<% end %>

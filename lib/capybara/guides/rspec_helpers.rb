@@ -1,4 +1,3 @@
-# TODO: Split this file up
 module Capybara
   # Classes to support generating guides in Capybara feature specs
   module Guides
@@ -21,58 +20,78 @@ module RecordGuideActionForCapybaraActions
   # TODO: attach_file(locator, path, options = {})
 
   def check(locator, options = {})
-    record_action "Check \"#{locator}\""
     super
+    target = find(:checkbox, locator, options).first(:xpath, ".//..")
+    text = "Check <samp>#{locator}</samp>".html_safe
+    record_action text, target
   end
 
   def choose(locator, options = {})
-    record_action "Choose \"#{locator}\""
     super
+    target = find(:radio_button, locator, options).first(:xpath, ".//..")
+    text = "Choose <samp>#{locator}</samp>".html_safe
+    record_action text, target
   end
 
   def click_button(locator = nil, options = {})
-    record_action "Click the \"#{locator}\" button"
+    target = find(:link_or_button, locator, options)
+    text = "Click the <samp>#{locator}</samp> button".html_safe
+    record_action text, target
     super
   end
 
   def click_link(locator = nil, options = {})
-    record_action "Click on \"#{locator}\""
+    target = find(:link_or_button, locator, options)
+    text = "Click the <samp>#{locator}</samp> link".html_safe
+    record_action text, target
     super
   end
 
   def click_link_or_button(locator = nil, options = {})
-    link_or_button = find(:link_or_button, locator, options)
-    record_action "Click on \"#{locator}\"#{at_position(link_or_button)}"
+    target = find(:link_or_button, locator, options)
+    tag_type = target.tag_name == 'button' ? 'button' : 'link'
+    text = "Click the <samp>#{locator}</samp> #{tag_type}#{at_position(target)}".html_safe
+    record_action text, target
     super
   end
   alias_method :click_on, :click_link_or_button
 
   def fill_in(locator, options = {})
-    record_action "Fill in #{locator} with \"#{options[:with]}\""
+    with = options[:with]
     super
+    target = find(:fillable_field, locator)
+    text = "Fill in #{locator} with <kbd>#{with}</kbd>".html_safe
+    record_action text, target
   end
 
   def select(value, options = {})
-    record_action "Select \"#{value}\" from #{options[:from]}"
+    from = options[:from]
     super
+    target = find(:select, from)
+    text = "Select <samp>#{value}</samp> from #{from}".html_safe
+    record_action text, target
   end
 
   def uncheck(locator, options = {})
-    record_action "Uncheck \"#{locator}\""
     super
+    target = find(:checkbox, locator, options).first(:xpath, ".//..")
+    text = "Uncheck <samp>#{locator}</samp>".html_safe
+    record_action text, target
   end
 
   def unselect(value, options = {})
-    record_action "Unselect \"#{value}\" from #{options[:from]}"
+    from = options[:from]
     super
+    target = find(:target, from)
+    text = "Unselect <samp>#{value}</samp> from #{from}".html_safe
+    record_action text, target
   end
 
   private
 
-  # TODO: Merge with user_action
-  def record_action(text)
+  def record_action(text, element = nil)
     guide = RSpec.current_example.metadata[:current_guide]
-    guide.steps << Capybara::Guides::Action.new(text) if guide.present?
+    guide.steps << Capybara::Guides::Action.new(text, element, guide.directory_name) if guide.present?
   end
 
   def at_position(element)
@@ -103,12 +122,12 @@ Capybara::Node::Base.prepend RecordGuideActionForCapybaraActions
 # Override Capybara visit action to record the action
 module RecordGuideActionForVisit
   def visit(visit_uri)
+    super
     guide = RSpec.current_example.metadata[:current_guide]
     if guide.present?
-      text = "Visit #{visit_uri}"
-      guide.steps << Capybara::Guides::Action.new(text) if guide.present?
+      text = "Visit <samp>#{visit_uri}</samp>".html_safe
+      guide.steps << Capybara::Guides::Visit.new(text, self, guide.directory_name) if guide.present?
     end
-    super
   end
 end
 Capybara::Session.prepend RecordGuideActionForVisit
@@ -130,7 +149,6 @@ RSpec.configure do |config|
   end
 end
 
-# TODO: Screenshots for other RSpec matchers
 module RecordScreenshotForHaveTextMatch
   def matches?(actual)
     guide = RSpec.current_example.metadata[:current_guide]

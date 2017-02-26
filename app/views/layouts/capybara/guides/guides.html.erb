@@ -8,8 +8,9 @@
 
     <style>
       h2 {
-        clear: left;
+        clear: both;
       }
+
       .screenshot {
         border: solid 1px black;
         padding: 0.5em;
@@ -18,13 +19,16 @@
         margin: 0 2em 2em 0;
         width: 40%;
       }
+      .screenshot::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
 
       .element_screenshot {
-        border: solid 1px black;
-        padding: 0.5em;
-        margin: 0 2em 2em 0;
+        border: none;
         max-width: 40%;
-        display: block;
+        display: inline;
       }
 
       aside {
@@ -34,8 +38,17 @@
         width: 40%;
         display: inline-block
       }
+
       ol.steps>li {
         list-style: none;
+        margin-bottom: 2em;
+      }
+
+      samp {
+        background: #eeeeee;
+        padding: 0.1em 0.2em;
+        border: solid 1px #dddddd;
+        border-radius: 2px;
       }
     </style>
   </head>
