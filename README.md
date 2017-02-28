@@ -7,74 +7,71 @@ This gem automates the production of simple guides from Capybara feature specs, 
 This is currently a proof-of-concept, and hasn't been tested in practice yet.
 
 ## Example
-Spec code
+Here's an example `scenario` block from a feature spec using Rspec and Capybara, where an admin is creating an order in the [Solidus](https://github.com/solidusio/solidus) eCommerce platform.
 ```ruby
-  scenario "How to purchase a product", js: true do
-    @guide.intro = "An example guide showing how to get through checkout"
+scenario "Admin is manually creating an order", js: true do
+  text_block <<~HEREDOC.html_safe
+    <h3>Introduction</h3>
+    This guide covers how to create a manual order from the Admin Interface.
+  HEREDOC
 
-    visit "/products/example_product"
+  heading "Create a New Order"
+  visit spree.admin_path
+  click_on "Orders"
+  click_on "New Order"
 
-    step "Add a product to your cart" do
-      click_button("Add To Cart")
-    end
+  heading "Add Products to the Order"
+  expect(page).to have_text('Cart')
+  expect(first('fieldset')).to have_text('Add Product')
+  select2_search product.name, from: Spree.t(:name_or_sku)
+  expect(page).to have_text('Select stock')
+  fill_in_quantity("table.stock-levels", "quantity_0", 2)
+  click_button 'Add'
+  sidebar "Follow the same steps to add more products to the order"
 
-    step "Review your cart" do
-      visit "/cart"
-      click_button("Checkout")
-    end
-
-    step "Enter an email address" do
-      within "#guest_checkout" do
-        fill_in("Email", with: "guest@example.com")
-        click_button "Continue"
-      end
-    end
-
-    step "Fill in your billing address" do
-      within "#billing" do
-        fill_in("First Name", with: "Test")
-        fill_in("Last Name", with: "Test")
-        fill_in("Street Address", with: "13820 NE Airport Way")
-        fill_in("City", with: "Portland")
-        select "United States of America", from: "order_bill_address_attributes_country_id"
-        select "Alabama", from: "order_bill_address_attributes_state_id"
-        fill_in("Zip", with: "97206")
-        fill_in("Phone", with: "12345")
-      end
-      within "#shipping" do
-        check "order_use_billing"
-      end
-      click_button("Save and Continue")
-    end
-
-    step "Choose a shipping method" do
-      within "#methods" do
-        choose "Shipping Method 1"
-      end
-      click_button("Save and Continue")
-    end
-
-    step "Enter payment details" do
-      within "#payment" do
-        choose "Payment Method 1"
-        fill_in("Name on card", with: "Test Test")
-        fill_in("Card Number", with: "4111111111111111")
-        fill_in("Expiration", with: "01/99")
-        fill_in("Card Code", with: "123")
-      end
-      click_button("Save and Continue")
-    end
-
-    step "Confirm your order" do
-      expect(page).to have_content("Confirm".upcase)
-      click_button("Place Order")
-    end
-
-    step "Done!" do
-    end
+  heading "Add Customer Details"
+  click_on "Customer"
+  expect(page).to have_text('Customer Details')
+  within "#select-customer" do
+    targetted_select2_search user.email, from: "#s2id_customer_search"
   end
+  sidebar <<~HEREDOC
+    You can either select a name from the "Customer Search" field if the customer has ordered from you before, or you can enter the customer's email address in the "Email" field of the "Account" section. The setting for "Guest Checkout" will automatically change accordingly."
+  HEREDOC
+  check "order_use_billing"
+  fill_in "First Name",                with: "John 99"
+  fill_in "Last Name",                 with: "Doe"
+  fill_in "Street Address",            with: "100 first lane"
+  fill_in "Street Address (cont'd)",   with: "#101"
+  fill_in "City",                      with: "Bethesda"
+  fill_in "Zip",                       with: "20170"
+  targetted_select2_search state.name, from: "#s2id_order_bill_address_attributes_state_id"
+  fill_in "Phone",                     with: "123-456-7890"
+  click_on "Update"
+
+  heading "Shipments"
+  expect(page).to have_text('Shipments')
+
+  heading "Adjustments"
+  click_on "Adjustments"
+  expect(page).to have_text('Adjustments')
+
+  heading "Payments"
+  click_on "Payments"
+  expect(page).to have_text('Payments')
+  click_on "Update"
+
+  heading "Confirm"
+  click_on "Confirm"
+  expect(page).to have_text('Confirm Order')
+  click_on "Complete Order"
+
+  heading "Done"
+  expect(page).to have_text('Order completed')
+end
+
 ```
-will be rendered...
+As the spec is run, capybara-guides records what actions were taken, and saves screenshots at relevant points. AT the end, it produces static HTML reproducing the spec as a human-readable recipe for reproducing the same steps:
 
 ![Example Image](https://raw.githubusercontent.com/isaacfreeman/capybara-guides/master/doc/example.png)
 
@@ -97,19 +94,28 @@ Or install it yourself as:
 ## Usage
 Add the `:guide` tag to the scenario you want to generate a guide from. If you have `infer_spec_type_from_file_location!` active, you can also put your guide specs directly into `/spec/guides`.
 
-Add an optional intro.
-```
+```ruby
 scenario "How to purchase a product", js: true, guide: true do
-  @guide.intro = "An example guide showing how to get through checkout"
   ...
 end
 ```
 
-Add `step` blocks to surround each section of RSpec code you'd like to be represented in the guide. A screenshot will be taken when the step is completed.
+Add calls to the `heading`, `text_block` and `sidebar` methods as needed.
+```ruby
+heading "Create a New Order"
+
+text_block "This guide covers how to create a manual order from the Admin Interface."
+
+sidebar "The setting for \"Guest Checkout\" will automatically change accordingly."
 ```
-step "Add a product to your cart" do
-  visit "/products/example_product"
-end
+
+Browser links, buttons and form elements will be captured as images when the relevant Capybara methods are called (e.g. click_button, fill_in, choose, select...)
+
+Additional images will be captured for each use of the Capybara `HaveText` matcher.
+```ruby
+expect(find('.header')).to have_text('Some Text')  # ...will capture a particular page element
+
+expect(page).to have_text('Some Text')             # ...will capture a screenshot of the full page
 ```
 
 ## Contributing
