@@ -16,7 +16,12 @@ module Capybara
       end
 
       def screenshot_filename
-        @filename ||= "#{index}-action-#{@text.parameterize(separator: '_')}".first(32)
+        # TODO: Manage gem versions for different Rails versions
+        if Rails.version >= '5.1.0'
+          @filename ||= "#{index}-action-#{@text.parameterize(separator: '_')}".first(32)
+        else
+          @filename ||= "#{index}-action-#{@text.parameterize('_')}".first(32)
+        end
       end
 
       def partial

@@ -25,8 +25,14 @@ module Capybara
       end
 
       def directory_name
-        group_dir = @group_title.parameterize(separator: '_')
-        guide_dir = title.parameterize(separator: '_')
+        # TODO: Manage gem versions for different Rails versions
+        if Rails.version >= '5.1.0'
+          group_dir = @group_title.parameterize(separator: '_')
+          guide_dir = title.parameterize(separator: '_')
+        else
+          group_dir = @group_title.parameterize('_')
+          guide_dir = title.parameterize('_')
+        end
         Rails.root.join('doc', 'guides', group_dir, guide_dir)
       end
 
@@ -37,11 +43,15 @@ module Capybara
       private
 
       def rendered_string
-        GuidesController.render(
-          layout: 'capybara/guides/guides',
-          template: 'capybara/guides/show',
-          assigns: { guide: self }
-        )
+        # TODO: In Rails 5 we can do this:
+        # GuidesController.render(
+        #   layout: 'capybara/guides/guides',
+        #   template: 'capybara/guides/show',
+        #   assigns: { guide: self }
+        # )
+        assigns = { guide: self }
+        view = ActionView::Base.new(GuidesController.view_paths, assigns)
+        view.render(layout: 'layouts/capybara/guides/guides', template: 'capybara/guides/show')
       end
 
       def html_filename
