@@ -13,6 +13,10 @@ module Capybara
       @guide.steps << Capybara::Guides::UserAction.new(text, element, @guide.directory_name)
     end
 
+    def show_current_state(text, element)
+      @guide.steps << Capybara::Guides::CurrentState.new(@guide.directory_name, text, element)
+    end
+
     def heading(text)
       @guide.steps << Heading.new(text)
     end
