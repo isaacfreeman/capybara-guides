@@ -4,6 +4,7 @@ module Capybara
       require 'mini_magick'
 
       def save_screenshot(image_filename)
+        ensure_image_directory_is_present(image_filename)
         # TODO: fail gracefully if driver doesn't support save_screenshot
         session.driver.save_screenshot(image_filename, full: true)
         crop(image_filename) unless full_screenshot?
@@ -14,6 +15,10 @@ module Capybara
       end
 
       private
+
+      def ensure_image_directory_is_present(image_filename)
+        FileUtils.mkdir_p image_filename.dirname
+      end
 
       def index
         Dir[File.join(@directory_name, '**', '*')].count { |file| File.file?(file) } + 1
