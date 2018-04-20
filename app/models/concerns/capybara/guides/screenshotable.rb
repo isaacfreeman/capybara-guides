@@ -3,8 +3,8 @@ module Capybara
     module Screenshotable
       require 'mini_magick'
 
-      # TODO: Some elements are outside the screenshot area
       def save_screenshot(image_filename)
+        # TODO: fail gracefully if driver doesn't support save_screenshot
         session.driver.save_screenshot(image_filename, full: true)
         crop(image_filename) unless full_screenshot?
       end
@@ -23,6 +23,10 @@ module Capybara
         session.evaluate_script("document.evaluate('#{@element.path}', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getBoundingClientRect()")
       end
 
+      def device_pixel_ratio
+        session.evaluate_script("window.devicePixelRatio")
+      end
+
       def session
         return @element if @element.is_a? Capybara::Session
         @element.session
@@ -30,7 +34,8 @@ module Capybara
 
       def crop(image_filename)
         image = MiniMagick::Image.open(image_filename)
-        image.crop "#{element_data['width']}x#{element_data['height']}+#{element_data['left']}+#{element_data['top']}"
+        dpr = device_pixel_ratio
+        image.crop "#{element_data['width'] * dpr}x#{element_data['height'] * dpr}+#{element_data['left'] * dpr}+#{element_data['top'] * dpr}"
         image.write image_filename
       end
     end
