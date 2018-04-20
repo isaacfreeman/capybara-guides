@@ -9,3 +9,11 @@
     </li>
   <% end %>
 </ol>
+
+<footer class="metadata">
+  <% @guide.metadata.each do |metadata_item| %>
+    <p>
+      <%= metadata_item %>
+    </p>
+  <% end %>
+</footer>

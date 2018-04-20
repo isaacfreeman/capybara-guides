@@ -20,5 +20,9 @@ module Capybara
     def sidebar(text)
       @guide.steps << Sidebar.new(text)
     end
+
+    def metadata(text)
+      @guide.metadata << text
+    end
   end
 end

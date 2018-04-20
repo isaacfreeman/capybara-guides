@@ -4,13 +4,15 @@ module Capybara
   module Guides
     # Represents a user guide
     class Guide
+      attr_accessor :metadata
       attr_accessor :steps
       attr_accessor :title
 
       def initialize(example)
         @group_title = example.metadata[:example_group][:description]
-        @title = example.metadata[:description]
+        @metadata = []
         @steps = []
+        @title = example.metadata[:description]
       end
 
       # TODO: Config for destination path
