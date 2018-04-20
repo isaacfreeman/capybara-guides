@@ -1,3 +1,4 @@
+require 'capybara/rspec'
 require 'capybara/guides/engine'
 require 'capybara/guides/version'
 require 'capybara/rspec/matchers'
